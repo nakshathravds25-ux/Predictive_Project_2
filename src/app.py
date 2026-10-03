@@ -1,23 +1,26 @@
 import streamlit as st
 import pickle
 
-# Load model
-model = pickle.load(open("models/mental_health_model.pkl", "rb"))
+st.set_page_config(page_title="Academic NLP Classification Prototype")
 
-# Load vectorizer
+st.title("Academic NLP Classification Prototype")
+st.warning(
+    "This is a coursework prototype. Its labels are not clinically validated and "
+    "the output must not be interpreted as a mental-health diagnosis or screening result."
+)
+
+model = pickle.load(open("models/mental_health_model.pkl", "rb"))
 vectorizer = pickle.load(open("models/tfidf_vectorizer.pkl", "rb"))
 
-# App title
-st.title("Mental Health Status Classification")
+user_input = st.text_area("Enter text")
 
-# User input
-user_input = st.text_area("Enter social media text")
-
-# Prediction
 if st.button("Predict"):
-
-    text_vector = vectorizer.transform([user_input])
-
-    prediction = model.predict(text_vector)
-
-    st.success(f"Predicted Mental Health Status: {prediction[0]}")
+    if not user_input.strip():
+        st.info("Please enter some text first.")
+    else:
+        text_vector = vectorizer.transform([user_input])
+        prediction = model.predict(text_vector)
+        st.success(f"Predicted class: {prediction[0]}")
+        st.caption(
+            "This class reflects the labels used in the original academic dataset/model only."
+        )
